@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTH SmartMove – Prototype</title>
+<style>
+:root{--navy:#12304a;--blue:#1769aa;--sky:#eaf4fb;--green:#16845b;--mint:#e9f7f0;--orange:#e58b28;--red:#d94b4b;--ink:#203040;--muted:#647586;--line:#e4ebf1;--bg:#f4f7fa}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(115deg,#102d45,#1769aa);color:white;padding:22px max(20px,calc((100% - 1160px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:13px;background:#ffffff20;display:grid;place-items:center;font-size:24px}.brand h1{font-size:20px;margin:0}.brand p{margin:3px 0 0;color:#d8eafa;font-size:12px}
+.header-tag{font-size:12px;background:#ffffff20;border:1px solid #ffffff40;padding:8px 12px;border-radius:30px}
+main{max-width:1160px;margin:24px auto;padding:0 18px 48px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.tab{border:1px solid var(--line);background:white;color:var(--muted);padding:11px 16px;border-radius:11px;font-weight:700;cursor:pointer}.tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.page{display:none}.page.active{display:block}
+.hero{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:18px;flex-wrap:wrap}.hero h2{font-size:25px;margin:0 0 6px}.hero p{color:var(--muted);margin:0;line-height:1.5}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:7px 11px;background:var(--mint);color:var(--green);font-size:12px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:15px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 3px 12px #15334b08}.span-3{grid-column:span 3}.span-4{grid-column:span 4}.span-5{grid-column:span 5}.span-7{grid-column:span 7}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+.metric-label{font-size:12px;color:var(--muted);font-weight:700}.metric{font-size:27px;font-weight:850;margin:7px 0 2px}.metric-note{font-size:12px;color:var(--muted)}
+.card h3{font-size:16px;margin:0 0 14px}.gate{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-top:1px solid var(--line)}.gate:first-of-type{border-top:0}.gate strong{display:block;font-size:14px}.gate small{color:var(--muted)}.status{font-size:12px;font-weight:800;padding:6px 9px;border-radius:30px;white-space:nowrap}.low{background:#e8f7ef;color:#13774f}.mid{background:#fff4df;color:#a86410}.high{background:#fdecec;color:#bd3838}
+.bar{height:9px;background:#edf1f5;border-radius:20px;overflow:hidden;margin-top:9px}.bar i{height:100%;display:block;border-radius:20px;background:var(--blue)}
+.map{min-height:275px;border-radius:13px;background:#eaf2f6;position:relative;overflow:hidden;padding:20px;background-image:linear-gradient(30deg,transparent 48%,#d3e1e9 49%,#d3e1e9 51%,transparent 52%),linear-gradient(120deg,transparent 48%,#d3e1e9 49%,#d3e1e9 51%,transparent 52%);background-size:95px 95px}
+.map .campus{position:absolute;left:29%;top:26%;width:43%;height:48%;background:#d6eadf;border:2px solid #a8cfb8;border-radius:22px;display:grid;place-items:center;text-align:center;color:#246345;font-weight:800}
+.pin{position:absolute;background:white;border:2px solid var(--blue);border-radius:20px;padding:7px 10px;font-size:11px;font-weight:800;box-shadow:0 3px 10px #16364b20}.pin.one{left:8%;top:43%}.pin.two{right:7%;top:34%;border-color:var(--orange)}.pin.three{left:43%;bottom:8%;border-color:var(--green)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+button,.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--blue);color:white;font-weight:750;cursor:pointer;font-size:13px}button:hover{filter:brightness(.94)}button.secondary{background:#edf4f9;color:var(--navy)}button.green{background:var(--green)}button:disabled{opacity:.45;cursor:not-allowed}
+.notice{background:#fff8e9;border:1px solid #f4dfb7;color:#805315;padding:12px 14px;border-radius:12px;font-size:12px;line-height:1.5;margin-top:15px}
+select,input{width:100%;border:1px solid #d8e2ea;border-radius:10px;padding:11px;background:white;color:var(--ink);font:inherit}
+label{display:block;font-size:12px;font-weight:800;color:var(--muted);margin:0 0 7px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.points{font-size:38px;font-weight:900;color:var(--green);margin:4px 0}.reward{border:1px solid var(--line);border-radius:12px;padding:13px;margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}.reward strong{font-size:13px}.reward small{display:block;color:var(--muted);margin-top:4px}.history{font-size:13px;color:var(--muted);padding:10px 0;border-top:1px solid var(--line)}
+footer{text-align:center;color:#7b8995;font-size:11px;padding:20px}
+@media(max-width:760px){.span-3,.span-4,.span-5,.span-7,.span-8{grid-column:span 12}.metric{font-size:24px}.hero h2{font-size:21px}.map{min-height:245px}.form-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">🚦</div><div><h1>UTH SmartMove</h1><p>Điều phối giao thông thông minh · Di chuyển xanh</p></div></div>
+ <div class="header-tag">BẢN NGUYÊN MẪU DEMO · 2026</div>
+</header>
+<main>
+ <nav class="tabs" aria-label="Điều hướng">
+  <button class="tab active" data-page="traffic">🚦 Điều phối giao thông</button>
+  <button class="tab" data-page="green">🌱 Green Mobility Point</button>
+ </nav>
+
+ <section class="page active" id="traffic">
+  <div class="hero"><div><h2>Bảng điều khiển giao thông UTH</h2><p>Theo dõi tình trạng cổng trường và gợi ý hướng di chuyển cho sinh viên.</p></div><span class="pill">● Hệ thống mô phỏng đang hoạt động</span></div>
+  <div class="grid">
+   <div class="card span-3"><div class="metric-label">Lưu lượng phương tiện</div><div class="metric" id="totalCars">126</div><div class="metric-note">Lượt xe trong mô phỏng</div></div>
+   <div class="card span-3"><div class="metric-label">Cổng ít ùn tắc nhất</div><div class="metric">Cổng phụ</div><div class="metric-note">Đề xuất theo dữ liệu demo</div></div>
+   <div class="card span-3"><div class="metric-label">Thời gian chờ dự kiến</div><div class="metric" id="waitTime">4 phút</div><div class="metric-note">Giá trị minh họa</div></div>
+   <div class="card span-3"><div class="metric-label">Trạng thái</div><div class="metric" style="font-size:21px;color:var(--green)">Đang theo dõi</div><div class="metric-note">Cập nhật khi bấm mô phỏng</div></div>
+
+   <div class="card span-5">
+    <h3>Tình trạng các cổng</h3>
+    <div class="gate"><div><strong>Cổng chính</strong><small id="mainCount">82 phương tiện · Mật độ cao</small><div class="bar"><i id="mainBar" style="width:82%;background:var(--red)"></i></div></div><span class="status high" id="mainStatus">Đông</span></div>
+    <div class="gate"><div><strong>Cổng phụ</strong><small id="sideCount">24 phương tiện · Mật độ thấp</small><div class="bar"><i id="sideBar" style="width:24%;background:var(--green)"></i></div></div><span class="status low" id="sideStatus">Thông thoáng</span></div>
+    <div class="gate"><div><strong>Khu vực bãi xe</strong><small id="parkCount">20 phương tiện · Mật độ trung bình</small><div class="bar"><i id="parkBar" style="width:45%;background:var(--orange)"></i></div></div><span class="status mid" id="parkStatus">Trung bình</span></div>
+    <button class="secondary" style="margin-top:12px" id="simulateBtn">Mô phỏng cập nhật AI</button>
+   </div>
+   <div class="card span-7">
+    <h3>Sơ đồ luồng di chuyển (minh họa)</h3>
+    <div class="map"><div class="campus">KHUÔN VIÊN<br>TRƯỜNG UTH</div><div class="pin one">🔴 Cổng chính</div><div class="pin two">🟢 Cổng phụ</div><div class="pin three">🅿️ Bãi giữ xe</div></div>
+    <div class="legend"><span><i class="dot" style="background:#d94b4b"></i>Mật độ cao</span><span><i class="dot" style="background:#e58b28"></i>Mật độ trung bình</span><span><i class="dot" style="background:#16845b"></i>Thông thoáng</span></div>
+   </div>
+   <div class="card span-12">
+    <h3>Gợi ý di chuyển</h3>
+    <p id="routeAdvice" style="font-size:14px;line-height:1.6;margin:0 0 12px">Cổng chính đang đông. Sinh viên có thể cân nhắc sử dụng cổng phụ nếu phù hợp với vị trí đến và hướng dẫn của nhà trường.</p>
+    <button id="refreshAdvice" class="secondary">Làm mới gợi ý</button>
+    <div class="notice"><b>Lưu ý an toàn:</b> Không xem điện thoại khi đang điều khiển phương tiện. Hãy kiểm tra thông tin trước khi khởi hành hoặc dừng xe tại nơi an toàn.</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="page" id="green">
+  <div class="hero"><div><h2>Green Mobility Point (GMP)</h2><p>Tích điểm khi lựa chọn phương thức di chuyển giảm phát thải và giảm xe cá nhân.</p></div><span class="pill">🌿 Khuyến khích di chuyển xanh</span></div>
+  <div class="grid">
+   <div class="card span-4">
+    <div class="metric-label">Số điểm hiện có</div><div class="points" id="points">120</div><div class="metric-note">Điểm trong tài khoản demo</div>
+    <div class="notice" style="margin-top:18px">Trong prototype, điểm được cộng sau khi bạn gửi lượt xác nhận. Chưa kết nối GPS hoặc hệ thống xác minh thật.</div>
+   </div>
+   <div class="card span-8">
+    <h3>Xác nhận chuyến đi xanh</h3>
+    <div class="form-row">
+     <div><label for="transport">Phương thức di chuyển</label><select id="transport"><option value="bus">Xe buýt</option><option value="metro">Metro</option><option value="bike">Xe đạp / đi bộ</option><option value="carpool">Đi chung xe</option></select></div>
+     <div><label for="tripDate">Ngày di chuyển</label><input type="date" id="tripDate"></div>
+    </div>
+    <button class="green" id="checkinBtn">Xác nhận chuyến đi và nhận điểm</button>
+    <p id="checkinMessage" style="font-size:13px;color:var(--green);font-weight:700;min-height:18px"></p>
+   </div>
+   <div class="card span-7">
+    <h3>Đổi điểm nhận ưu đãi</h3>
+    <div class="reward"><div><strong>Voucher căn tin</strong><small>Giảm giá đồ uống / món ăn</small></div><div style="text-align:right"><b>100 điểm</b><br><button class="secondary redeem" data-cost="100" data-name="Voucher căn tin">Đổi</button></div></div>
+    <div class="reward"><div><strong>Ưu tiên đăng ký chỗ gửi xe</strong><small>Quyền đăng ký trước theo đợt (mô phỏng)</small></div><div style="text-align:right"><b>200 điểm</b><br><button class="secondary redeem" data-cost="200" data-name="Ưu tiên đăng ký chỗ gửi xe">Đổi</button></div></div>
+    <div class="reward"><div><strong>Bình nước thân thiện môi trường</strong><small>Quà tặng khuyến khích sống xanh</small></div><div style="text-align:right"><b>300 điểm</b><br><button class="secondary redeem" data-cost="300" data-name="Bình nước thân thiện môi trường">Đổi</button></div></div>
+    <p id="redeemMessage" style="font-size:13px;color:var(--green);font-weight:700"></p>
+   </div>
+   <div class="card span-5">
+    <h3>Lịch sử hoạt động</h3><div id="history"><div class="history">+120 điểm · Số dư khởi tạo của tài khoản demo</div></div>
+   </div>
+   <div class="card span-12">
+    <h3>Nguyên tắc tính điểm (minh họa)</h3>
+    <div class="grid">
+     <div class="span-3"><b>Xe buýt</b><p class="metric" style="font-size:22px">+20</p><small class="metric-note">điểm / lượt</small></div>
+     <div class="span-3"><b>Metro</b><p class="metric" style="font-size:22px">+25</p><small class="metric-note">điểm / lượt</small></div>
+     <div class="span-3"><b>Xe đạp / đi bộ</b><p class="metric" style="font-size:22px">+20</p><small class="metric-note">điểm / lượt</small></div>
+     <div class="span-3"><b>Đi chung xe</b><p class="metric" style="font-size:22px">+15</p><small class="metric-note">điểm / lượt</small></div>
+    </div>
+   </div>
+  </div>
+ </section>
+</main>
+<footer>UTH SmartMove · Prototype phục vụ học tập môn Tư duy thiết kế và Đổi mới sáng tạo.<br>Dữ liệu, lưu lượng, điểm thưởng và trạng thái AI trong trang này đều là dữ liệu mô phỏng.</footer>
+<script>
+const tabs=document.querySelectorAll('.tab');
+tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));t.classList.add('active');document.getElementById(t.dataset.page).classList.add('active')}));
+let trafficStep=0;
+const scenarios=[
+ {main:82,side:24,park:45,wait:4,advice:'Cổng chính đang đông. Sinh viên có thể cân nhắc sử dụng cổng phụ nếu phù hợp với vị trí đến và hướng dẫn của nhà trường.'},
+ {main:55,side:38,park:62,wait:6,advice:'Lưu lượng tại cổng chính đang giảm, trong khi bãi xe ở mức trung bình. Nên đi theo hướng dẫn phân luồng tại cổng.'},
+ {main:91,side:18,park:76,wait:8,advice:'Cổng chính và bãi xe đang có mật độ cao. Nếu được phép, hãy chọn cổng phụ và tránh dừng đỗ gần khu vực ra vào.'},
+ {main:36,side:28,park:32,wait:3,advice:'Mật độ phương tiện tại các khu vực đang thấp. Sinh viên tiếp tục đi đúng làn và tuân thủ hướng dẫn của bảo vệ.'}
+];
+function setGate(prefix,value,label){document.getElementById(prefix+'Count').textContent=value+' phương tiện · '+label;document.getElementById(prefix+'Bar').style.width=value+'%';let s=document.getElementById(prefix+'Status');s.textContent=value>=70?'Đông':value>=40?'Trung bình':'Thông thoáng';s.className='status '+(value>=70?'high':value>=40?'mid':'low');document.getElementById(prefix+'Bar').style.background=value>=70?'var(--red)':value>=40?'var(--orange)':'var(--green)'}
+function updateTraffic(){let d=scenarios[trafficStep%scenarios.length];setGate('main',d.main,'');setGate('side',d.side,'');setGate('park',d.park,'');document.getElementById('waitTime').textContent=d.wait+' phút';document.getElementById('totalCars').textContent=d.main+d.side+d.park;document.getElementById('routeAdvice').textContent=d.advice;trafficStep++}
+document.getElementById('simulateBtn').addEventListener('click',updateTraffic);
+document.getElementById('refreshAdvice').addEventListener('click',()=>{updateTraffic();});
+let points=120;const balance=document.getElementById('points');
+const today=new Date();document.getElementById('tripDate').value=today.toISOString().slice(0,10);
+const rewards={bus:20,metro:25,bike:20,carpool:15};
+const names={bus:'Xe buýt',metro:'Metro',bike:'Xe đạp / đi bộ',carpool:'Đi chung xe'};
+function addHistory(message){let el=document.createElement('div');el.className='history';el.textContent=message;document.getElementById('history').prepend(el)}
+document.getElementById('checkinBtn').addEventListener('click',()=>{let mode=document.getElementById('transport').value;let date=document.getElementById('tripDate').value;if(!date){document.getElementById('checkinMessage').textContent='Vui lòng chọn ngày di chuyển.';return}let earned=rewards[mode];points+=earned;balance.textContent=points;document.getElementById('checkinMessage').textContent='Đã ghi nhận chuyến đi mô phỏng: +'+earned+' điểm.';addHistory('+'+earned+' điểm · '+names[mode]+' · '+date)});
+document.querySelectorAll('.redeem').forEach(btn=>btn.addEventListener('click',()=>{let cost=Number(btn.dataset.cost),name=btn.dataset.name;let msg=document.getElementById('redeemMessage');if(points<cost){msg.textContent='Bạn chưa đủ điểm để đổi ưu đãi này.';return}points-=cost;balance.textContent=points;msg.textContent='Đổi thành công (mô phỏng): '+name+'.';addHistory('-'+cost+' điểm · Đổi '+name)}));
+</script>
+</body>
+</html>
